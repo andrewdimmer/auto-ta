@@ -7,9 +7,10 @@ import {
   ListItemAvatar,
   Avatar,
 } from "@material-ui/core";
-import React from "react";
-import DeleteIcon from "@material-ui/icons/Delete";
+import React, { Fragment } from "react";
+import OpenInBrowserIcon from "@material-ui/icons/OpenInBrowser";
 import ClassIcon from "@material-ui/icons/Class";
+import ClassDetails from "../Layouts/ClassDetails";
 
 declare interface ClassListItemProps {
   userClass: UserClass;
@@ -22,28 +23,41 @@ const ClassListItem: React.FunctionComponent<ClassListItemProps> = ({
   userMode,
   classes,
 }) => {
+  const [detailsOpen, setDetailsOpen] = React.useState<boolean>(false);
+
   return (
-    <Paper className={classes.marginedTopBottom}>
-      <ListItem ContainerComponent="div">
-        <ListItemAvatar>
-          <Avatar>
-            <ClassIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={userClass.className}
-          secondary={userClass.classId}
-        />
-        <ListItemSecondaryAction>
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    </Paper>
+    <Fragment>
+      <Paper className={classes.marginedTopBottom}>
+        <ListItem ContainerComponent="div">
+          <ListItemAvatar>
+            <Avatar>
+              <ClassIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={userClass.className}
+            secondary={userClass.classId}
+          />
+          <ListItemSecondaryAction>
+            <IconButton
+              onClick={() => {
+                setDetailsOpen(true);
+              }}
+            >
+              <OpenInBrowserIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+      </Paper>
+
+      <ClassDetails
+        open={detailsOpen}
+        setOpen={setDetailsOpen}
+        userMode={userMode}
+        classId={userClass.classId}
+        classes={classes}
+      />
+    </Fragment>
   );
 };
 
