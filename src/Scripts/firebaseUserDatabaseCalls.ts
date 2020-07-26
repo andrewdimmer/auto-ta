@@ -1,9 +1,4 @@
 import { firestoreUsersRef } from "./firebaseConfig";
-import {
-  UserProfile,
-  UserProfileUpdateObject,
-  UserPublicProfile,
-} from "./firebaseUserTypes";
 import { logErrReturnFalse, logErrReturnNull } from "./helpers";
 
 /**
@@ -20,7 +15,7 @@ export const createNewUserDatabaseObjects = ({
 }: UserPublicProfile): Promise<boolean> => {
   return firestoreUsersRef
     .doc(userId)
-    .set({ userId, displayName, email, photoUrl })
+    .set({ userId, displayName, email, photoUrl, teaching: [], attending: [] })
     .then(() => true)
     .catch(logErrReturnFalse);
 };
