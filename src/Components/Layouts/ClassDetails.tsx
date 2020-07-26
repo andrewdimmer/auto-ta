@@ -20,6 +20,7 @@ declare interface ClassDetailsProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   userMode: UserMode;
+  userId: string;
   classId: string;
   classes: any;
 }
@@ -35,6 +36,7 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
   open,
   setOpen,
   userMode,
+  userId,
   classId,
   classes,
 }) => {
@@ -107,7 +109,11 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
         <TeacherClassDetails userClass={userClass} classes={classes} />
       )}
       {userMode === "student" && (
-        <StudentClassDetails userClass={userClass} classes={classes} />
+        <StudentClassDetails
+          userId={userId}
+          userClass={userClass}
+          classes={classes}
+        />
       )}
     </Dialog>
   );

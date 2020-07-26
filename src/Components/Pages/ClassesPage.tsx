@@ -198,6 +198,7 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
           <ClassListItem
             userClass={userClass}
             userMode={userMode}
+            userId={currentUserProfile ? currentUserProfile.userId : "void"}
             classes={classes}
             key={userClass.classId}
           />
