@@ -1,5 +1,7 @@
 declare type UserMode = "student" | "teacher" | "";
 
+declare type QuestionType = "poll" | "shortAnswer" | "";
+
 declare interface UserPublicProfile {
   userId: string;
   displayName: string;
@@ -22,4 +24,12 @@ declare interface UserClass {
   className: string;
   classId: string;
   handRaised: boolean;
+  currentQuestion: string;
+  currentQuestionType: QuestionType;
+}
+
+declare interface Question {
+  questionId: string;
+  type: QuestionType;
+  correctAnswer: string;
 }

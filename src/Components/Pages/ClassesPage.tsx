@@ -64,10 +64,12 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
     if (currentUserProfile) {
       const classId = nanoid();
       currentUserProfile.teaching.push(classId);
-      const newClassObject = {
+      const newClassObject: UserClass = {
         classId,
         className: newClassName,
         handRaised: false,
+        currentQuestion: "",
+        currentQuestionType: "",
       };
       createNewClass(
         currentUserProfile.userId,
