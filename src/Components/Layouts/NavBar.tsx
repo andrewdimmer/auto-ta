@@ -15,7 +15,6 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import Brightness4Icon from "@material-ui/icons/Brightness4";
 import Brightness7Icon from "@material-ui/icons/Brightness7";
 import React from "react";
-import { UserProfile } from "../../Scripts/firebaseUserTypes";
 import SquareAvatar from "../Misc/SquareAvatar";
 import { pageListForMenu, PageListForMenuItem } from "../Pages";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";

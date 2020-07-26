@@ -17,3 +17,7 @@ export const profilePicturesRef = firebaseApp
   .child("profilePictures");
 
 export const firestoreUsersRef = firebaseApp.firestore().collection("users");
+
+export const firestoreClassesRef = firebaseApp
+  .firestore()
+  .collection("classes");

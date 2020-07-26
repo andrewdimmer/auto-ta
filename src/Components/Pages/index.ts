@@ -2,8 +2,9 @@ import { SvgIconTypeMap } from "@material-ui/core";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import { UserProfile, UserMode } from "../../Scripts/firebaseUserTypes";
+import ClassIcon from "@material-ui/icons/Class";
 import { NotificationMessage } from "../Misc/Notifications";
+import ClassesPage from "./ClassesPage";
 import ErrorPage from "./ErrorPage";
 import LoginPage from "./LoginPage";
 import LogoutPage from "./LogoutPage";
@@ -43,6 +44,15 @@ const pageList: PageListItem[] = [
     displaySignedIn: false,
     displaySignedOut: true,
     component: LoginPage,
+  },
+  {
+    key: "classes",
+    title: "Classes",
+    menuLabel: "Classes",
+    menuIcon: ClassIcon,
+    displaySignedIn: true,
+    displaySignedOut: false,
+    component: ClassesPage,
   },
   {
     key: "profile",
