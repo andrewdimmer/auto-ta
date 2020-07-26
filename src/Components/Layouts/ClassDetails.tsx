@@ -1,6 +1,5 @@
 import {
   AppBar,
-  Container,
   Dialog,
   IconButton,
   Slide,
@@ -14,6 +13,8 @@ import {
   closeFirebaseClassListener,
   createFirebaseClassListener,
 } from "../../Scripts/firebaseUserClassSync";
+import StudentClassDetails from "../Content/StudentClassDetails";
+import TeacherClassDetails from "../Content/TeacherClassDetails";
 
 declare interface ClassDetailsProps {
   open: boolean;
@@ -37,7 +38,11 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
   classId,
   classes,
 }) => {
-  const [userClass, setUserClass] = React.useState<UserClass | null>(null);
+  const [userClass, setUserClass] = React.useState<UserClass>({
+    classId: "",
+    className: "",
+    handRaised: false,
+  });
 
   const handleClose = () => {
     closeFirebaseClassListener();
@@ -55,15 +60,12 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
   };
 
   const newUseClassDifferent = (newUserClass: UserClass) => {
-    const oldUserClass: UserClass = {
-      classId: userClass ? userClass.classId : "",
-      className: userClass ? userClass.className : "",
-    };
     return (
-      newUserClass.classId.indexOf(oldUserClass.classId) !== 0 ||
-      oldUserClass.classId.indexOf(newUserClass.classId) !== 0 ||
-      newUserClass.className.indexOf(oldUserClass.className) !== 0 ||
-      oldUserClass.className.indexOf(newUserClass.className) !== 0
+      newUserClass.classId.indexOf(userClass.classId) !== 0 ||
+      userClass.classId.indexOf(newUserClass.classId) !== 0 ||
+      newUserClass.className.indexOf(userClass.className) !== 0 ||
+      userClass.className.indexOf(newUserClass.className) !== 0 ||
+      userClass.handRaised !== newUserClass.handRaised
     );
   };
 
@@ -91,9 +93,12 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
           </Typography>
         </Toolbar>
       </AppBar>
-      <Container className={classes.pageTitle}>
-        <Typography variant="h3">Error!</Typography>
-      </Container>
+      {userMode === "teacher" && (
+        <TeacherClassDetails userClass={userClass} classes={classes} />
+      )}
+      {userMode === "student" && (
+        <StudentClassDetails userClass={userClass} classes={classes} />
+      )}
     </Dialog>
   );
 };

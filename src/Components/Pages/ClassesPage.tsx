@@ -67,6 +67,7 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
       const newClassObject = {
         classId,
         className: newClassName,
+        handRaised: false,
       };
       createNewClass(
         currentUserProfile.userId,
