@@ -10,6 +10,10 @@ import {
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import CloseIcon from "@material-ui/icons/Close";
 import React from "react";
+import {
+  closeFirebaseClassListener,
+  createFirebaseClassListener,
+} from "../../Scripts/firebaseUserClassSync";
 
 declare interface ClassDetailsProps {
   open: boolean;
@@ -34,25 +38,42 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
   classes,
 }) => {
   const [userClass, setUserClass] = React.useState<UserClass | null>(null);
-  const [firestoreListener, setFirestoreListener] = React.useState<
-    (() => void) | null
-  >(null);
 
   const handleClose = () => {
-    if (firestoreListener) {
-      firestoreListener();
-      setOpen(null);
-    }
+    closeFirebaseClassListener();
     setOpen(false);
   };
+
+  const initListener = () => {
+    if (open && classId) {
+      createFirebaseClassListener(classId, (newUserClass) => {
+        if (newUseClassDifferent(newUserClass)) {
+          setUserClass(newUserClass);
+        }
+      });
+    }
+  };
+
+  const newUseClassDifferent = (newUserClass: UserClass) => {
+    const oldUserClass: UserClass = {
+      classId: userClass ? userClass.classId : "",
+      className: userClass ? userClass.className : "",
+    };
+    return (
+      newUserClass.classId.indexOf(oldUserClass.classId) !== 0 ||
+      oldUserClass.classId.indexOf(newUserClass.classId) !== 0 ||
+      newUserClass.className.indexOf(oldUserClass.className) !== 0 ||
+      oldUserClass.className.indexOf(newUserClass.className) !== 0
+    );
+  };
+
+  initListener();
 
   return (
     <Dialog
       fullScreen
       open={open}
-      onClose={() => {
-        setOpen(false);
-      }}
+      onClose={handleClose}
       TransitionComponent={Transition}
     >
       <AppBar position="sticky">
@@ -60,9 +81,7 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
           <IconButton
             edge="start"
             color="inherit"
-            onClick={() => {
-              setOpen(false);
-            }}
+            onClick={handleClose}
             aria-label="close"
           >
             <CloseIcon />
