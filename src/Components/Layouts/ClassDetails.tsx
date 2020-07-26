@@ -20,6 +20,7 @@ declare interface ClassDetailsProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   userMode: UserMode;
+  userId: string;
   classId: string;
   classes: any;
 }
@@ -35,6 +36,7 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
   open,
   setOpen,
   userMode,
+  userId,
   classId,
   classes,
 }) => {
@@ -42,6 +44,8 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
     classId: "",
     className: "",
     handRaised: false,
+    currentQuestion: "",
+    currentQuestionType: "",
   });
 
   const handleClose = () => {
@@ -52,20 +56,28 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
   const initListener = () => {
     if (open && classId) {
       createFirebaseClassListener(classId, (newUserClass) => {
-        if (newUseClassDifferent(newUserClass)) {
+        if (newUserClassDifferent(newUserClass)) {
           setUserClass(newUserClass);
         }
       });
     }
   };
 
-  const newUseClassDifferent = (newUserClass: UserClass) => {
+  const newUserClassDifferent = (newUserClass: UserClass) => {
     return (
       newUserClass.classId.indexOf(userClass.classId) !== 0 ||
       userClass.classId.indexOf(newUserClass.classId) !== 0 ||
       newUserClass.className.indexOf(userClass.className) !== 0 ||
       userClass.className.indexOf(newUserClass.className) !== 0 ||
-      userClass.handRaised !== newUserClass.handRaised
+      userClass.handRaised !== newUserClass.handRaised ||
+      newUserClass.currentQuestion.indexOf(userClass.currentQuestion) !== 0 ||
+      userClass.currentQuestion.indexOf(newUserClass.currentQuestion) !== 0 ||
+      newUserClass.currentQuestionType.indexOf(
+        userClass.currentQuestionType
+      ) !== 0 ||
+      userClass.currentQuestionType.indexOf(
+        newUserClass.currentQuestionType
+      ) !== 0
     );
   };
 
@@ -97,7 +109,11 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
         <TeacherClassDetails userClass={userClass} classes={classes} />
       )}
       {userMode === "student" && (
-        <StudentClassDetails userClass={userClass} classes={classes} />
+        <StudentClassDetails
+          userId={userId}
+          userClass={userClass}
+          classes={classes}
+        />
       )}
     </Dialog>
   );

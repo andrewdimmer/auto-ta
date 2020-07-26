@@ -15,12 +15,14 @@ import ClassDetails from "../Layouts/ClassDetails";
 declare interface ClassListItemProps {
   userClass: UserClass;
   userMode: UserMode;
+  userId: string;
   classes: any;
 }
 
 const ClassListItem: React.FunctionComponent<ClassListItemProps> = ({
   userClass,
   userMode,
+  userId,
   classes,
 }) => {
   const [detailsOpen, setDetailsOpen] = React.useState<boolean>(false);
@@ -54,6 +56,7 @@ const ClassListItem: React.FunctionComponent<ClassListItemProps> = ({
         open={detailsOpen}
         setOpen={setDetailsOpen}
         userMode={userMode}
+        userId={userId}
         classId={userClass.classId}
         classes={classes}
       />
