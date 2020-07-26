@@ -15,6 +15,7 @@
     "firebase": "^7.17.0",
     "firebaseui": "^4.6.0",
     "material-ui-dropzone": "^3.3.0",
+    "nanoid": "^3.1.10",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-firebaseui": "^4.1.0",
