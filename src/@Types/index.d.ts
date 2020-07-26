@@ -21,4 +21,5 @@ declare type UserProfileUpdateObject = {
 declare interface UserClass {
   className: string;
   classId: string;
+  handRaised: boolean;
 }

@@ -2,21 +2,7 @@ import { firestoreClassesRef, firestoreUsersRef } from "./firebaseConfig";
 import { logErrReturnFalse, logErrReturnNull } from "./helpers";
 
 export const getUserClasses = (userClasses: string[]) => {
-  const userClassPromises = userClasses.map((classId) => {
-    return firestoreClassesRef
-      .doc(classId)
-      .get()
-      .then((classData) => {
-        const data = classData.data();
-        if (data) {
-          return data as UserClass;
-        } else {
-          console.log(`No data returned for class ${classId}`);
-          return null;
-        }
-      })
-      .catch(logErrReturnNull);
-  });
+  const userClassPromises = userClasses.map(getUserClass);
 
   return Promise.all(userClassPromises).then((userClasses) => {
     return userClasses.reduce((cleanUserClasses, classData) => {
@@ -26,6 +12,22 @@ export const getUserClasses = (userClasses: string[]) => {
       return cleanUserClasses;
     }, [] as UserClass[]);
   });
+};
+
+export const getUserClass = (classId: string) => {
+  return firestoreClassesRef
+    .doc(classId)
+    .get()
+    .then((classData) => {
+      const data = classData.data();
+      if (data) {
+        return data as UserClass;
+      } else {
+        console.log(`No data returned for class ${classId}`);
+        return null;
+      }
+    })
+    .catch(logErrReturnNull);
 };
 
 export const createNewClass = (

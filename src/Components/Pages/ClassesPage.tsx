@@ -67,6 +67,7 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
       const newClassObject = {
         classId,
         className: newClassName,
+        handRaised: false,
       };
       createNewClass(
         currentUserProfile.userId,
@@ -175,6 +176,8 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
 
   const loadClasses = () => {
     if (currentUserProfile && !loaded) {
+      console.log("Loading Classes for user " + currentUserProfile.userId);
+      console.log(getClassIdsByMode());
       setLoaded(true);
       getUserClasses(getClassIdsByMode()).then((newUserClasses) => {
         console.log(newUserClasses);
