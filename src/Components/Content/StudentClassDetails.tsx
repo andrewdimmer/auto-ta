@@ -1,4 +1,4 @@
-import { Button, Container, Typography } from "@material-ui/core";
+import { Button, Container, Typography, TextField } from "@material-ui/core";
 import React, { Fragment } from "react";
 import { raiseHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 import {
@@ -19,6 +19,14 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
   classes,
 }) => {
   const [unanswered, setUnanswered] = React.useState<boolean>(false);
+
+  const [shortAnswer, setShortAnswer] = React.useState<string>("");
+
+  const handleShortAnswerChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setShortAnswer(event.target.value);
+  };
 
   if (userClass.currentQuestion) {
     createFirebaseQuestionListener(
@@ -100,7 +108,32 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
             </Button>
           </Fragment>
         ) : userClass.currentQuestionType === "shortAnswer" && unanswered ? (
-          <Fragment></Fragment>
+          <Fragment>
+            <TextField
+              autoFocus
+              label="Your Answer"
+              fullWidth
+              value={shortAnswer}
+              onChange={handleShortAnswerChange}
+            />
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                answerQuestion(
+                  userId,
+                  userClass.classId,
+                  userClass.currentQuestion,
+                  shortAnswer
+                );
+                setShortAnswer("");
+              }}
+              className={classes.marginedTopBottom}
+            >
+              <Typography variant="h5">Submit</Typography>
+            </Button>
+          </Fragment>
         ) : (
           <Button
             color="primary"
