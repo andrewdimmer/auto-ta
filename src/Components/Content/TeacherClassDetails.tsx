@@ -11,6 +11,7 @@ import {
   createFirebaseQuestionListener,
 } from "../../Scripts/firebaseQuestionsSync";
 import { ackRaisedHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
+import ReportView from "../Layouts/ReportView";
 
 declare interface TeacherClassDetailsProps {
   userClass: UserClass;
@@ -26,6 +27,8 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
   const [maybeCount, setMaybeCount] = React.useState<number>(0);
 
   const [shortAnswer, setShortAnswer] = React.useState<string>("");
+
+  const [reportOpen, setReportOpen] = React.useState<boolean>(false);
 
   const handleShortAnswerChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -166,9 +169,25 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
             >
               <Typography variant="h5">Start Short Answer Question</Typography>
             </Button>
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={() => setReportOpen(true)}
+              className={classes.marginedTopBottom}
+            >
+              <Typography variant="h5">View Report</Typography>
+            </Button>
           </Fragment>
         )}
       </Container>
+
+      <ReportView
+        open={reportOpen}
+        setOpen={setReportOpen}
+        userClass={userClass}
+        classes={classes}
+      />
     </Fragment>
   );
 };
