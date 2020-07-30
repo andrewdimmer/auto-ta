@@ -38,9 +38,9 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
 }) => {
   const [pollCount, setPollCount] = React.useState<{
     yes: number;
-    no: number;
     maybe: number;
-  }>({ yes: 0, no: 0, maybe: 0 });
+    no: number;
+  }>({ yes: 0, maybe: 0, no: 0 });
   const [answerCount, setAnswerCount] = React.useState<{
     answers: number;
     users: number;
@@ -82,20 +82,20 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
       userClass.currentQuestion,
       (answers, totalNumberOfStudents) => {
         let yes = 0;
-        let no = 0;
         let maybe = 0;
+        let no = 0;
         let answerCountTemp = 0;
         for (const user in answers) {
           answerCountTemp++;
           if (answers[user] === "Yes") {
             yes++;
-          } else if (answers[user] === "No") {
-            no++;
           } else if (answers[user] === "Maybe") {
             maybe++;
+          } else if (answers[user] === "No") {
+            no++;
           }
         }
-        setPollCount({ yes, no, maybe });
+        setPollCount({ yes, maybe, no });
         setAnswerCount({
           answers: answerCountTemp,
           users: totalNumberOfStudents,
@@ -194,24 +194,7 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
                       />
                     </Grid>
                   </Grid>
-                  <Grid container alignItems="center">
-                    <Grid item>
-                      <Box style={{ width: 85, textAlign: "left" }}>
-                        <strong>No: </strong>
-                        {pollCount.no}
-                      </Box>
-                    </Grid>
-                    <Grid item xs>
-                      <LinearProgress
-                        variant="determinate"
-                        value={
-                          answerCount.users > 0
-                            ? (pollCount.no * 100) / answerCount.users
-                            : 0
-                        }
-                      />
-                    </Grid>
-                  </Grid>
+                  <br />
                   <Grid container alignItems="center">
                     <Grid item>
                       <Box style={{ width: 85, textAlign: "left" }}>
@@ -230,6 +213,26 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
                       />
                     </Grid>
                   </Grid>
+                  <br />
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Box style={{ width: 85, textAlign: "left" }}>
+                        <strong>No: </strong>
+                        {pollCount.no}
+                      </Box>
+                    </Grid>
+                    <Grid item xs>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          answerCount.users > 0
+                            ? (pollCount.no * 100) / answerCount.users
+                            : 0
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                  <br />
                 </Fragment>
               )}
               <Button
