@@ -128,22 +128,34 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
   };
 
   const joinClass = () => {
-    setLoadingMessage("Joining Class...");
-    if (currentUserProfile) {
-      currentUserProfile.attending.push(joinClassCode);
-      joinNewClass(currentUserProfile.userId, currentUserProfile.attending)
-        .then((joinedClass) => {
-          if (joinedClass) {
-            const newUserClasses = userClasses.concat([joinedClass]);
-            setUserClasses(newUserClasses);
-            setLoadingMessage("");
-            setNotification({
-              type: "success",
-              message: "New Class Joined Successfully.",
-              open: true,
-            });
-            closeAndCancel();
-          } else {
+    if (joinClassCode) {
+      setLoadingMessage("Joining Class...");
+      if (currentUserProfile) {
+        currentUserProfile.attending.push(joinClassCode);
+        joinNewClass(currentUserProfile.userId, currentUserProfile.attending)
+          .then((joinedClass) => {
+            if (joinedClass) {
+              const newUserClasses = userClasses.concat([joinedClass]);
+              setUserClasses(newUserClasses);
+              setLoadingMessage("");
+              setNotification({
+                type: "success",
+                message: "New Class Joined Successfully.",
+                open: true,
+              });
+              closeAndCancel();
+            } else {
+              setLoadingMessage("");
+              setNotification({
+                type: "error",
+                message: "Unable to join class. Please try again later.",
+                open: true,
+              });
+              closeAndCancel();
+            }
+          })
+          .catch((err) => {
+            console.log(err);
             setLoadingMessage("");
             setNotification({
               type: "error",
@@ -151,26 +163,23 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
               open: true,
             });
             closeAndCancel();
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoadingMessage("");
-          setNotification({
-            type: "error",
-            message: "Unable to join class. Please try again later.",
-            open: true,
           });
-          closeAndCancel();
+      } else {
+        setLoadingMessage("");
+        setNotification({
+          type: "error",
+          message:
+            "Unable to join class. Try logging off and logging on again.",
+          open: true,
         });
+        closeAndCancel();
+      }
     } else {
-      setLoadingMessage("");
       setNotification({
-        type: "error",
-        message: "Unable to join class. Try logging off and logging on again.",
+        type: "warning",
+        message: "Please enter a class code.",
         open: true,
       });
-      closeAndCancel();
     }
   };
 
