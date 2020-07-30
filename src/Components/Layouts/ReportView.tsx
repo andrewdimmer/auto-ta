@@ -13,12 +13,14 @@ import {
   TableRow,
   Toolbar,
   Typography,
+  Grid,
 } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { Fragment } from "react";
 import { getReportData } from "../../Scripts/firebaseReportGenerationCalls";
 import { NotificationMessage } from "../Misc/Notifications";
+import SquareAvatar from "../Misc/SquareAvatar";
 
 declare interface ReportViewProps {
   open: boolean;
@@ -117,7 +119,7 @@ const ReportView: React.FunctionComponent<ReportViewProps> = ({
                 {reportData ? (
                   reportData.questions.map((questionData) => {
                     return (
-                      <TableCell align="right" key={questionData.questionId}>
+                      <TableCell align="center" key={questionData.questionId}>
                         {questionData.type === "poll"
                           ? "Poll"
                           : questionData.correctAnswer
@@ -136,16 +138,59 @@ const ReportView: React.FunctionComponent<ReportViewProps> = ({
                 reportData.students.map((studentData) => (
                   <TableRow key={studentData.userId}>
                     <TableCell component="th" scope="row">
-                      {studentData.displayName}
+                      <Grid container spacing={1}>
+                        <Grid item>
+                          <div style={{ width: "24px", height: "24px" }}>
+                            <SquareAvatar
+                              alt={
+                                studentData?.displayName
+                                  ? studentData.displayName
+                                  : ""
+                              }
+                              src={
+                                studentData?.photoUrl
+                                  ? studentData.photoUrl
+                                  : ""
+                              }
+                              centerInContainer={true}
+                              maxHeightPercentageOfScreen={50}
+                              maxWidthPercentageOfParent={100}
+                              maxWidthPercentageOfScreen={50}
+                            />
+                          </div>
+                        </Grid>
+                        <Grid item>{studentData.displayName}</Grid>
+                      </Grid>
                     </TableCell>
                     {reportData ? (
                       reportData.questions.map((questionData) => {
                         return (
                           <TableCell
-                            align="right"
+                            align="center"
                             key={questionData.questionId}
                           >
-                            {questionData.answers[studentData.userId]}
+                            {questionData.answers[studentData.userId] ? (
+                              questionData.correctAnswer ? (
+                                <span
+                                  className={
+                                    questionData.answers[
+                                      studentData.userId
+                                    ].toLowerCase() ===
+                                    questionData.correctAnswer.toLowerCase()
+                                      ? classes.correctAnswer
+                                      : classes.incorrectAnswer
+                                  }
+                                >
+                                  {questionData.answers[studentData.userId]}
+                                </span>
+                              ) : (
+                                questionData.answers[studentData.userId]
+                              )
+                            ) : (
+                              <span className={classes.unanswered}>
+                                Unanswered
+                              </span>
+                            )}
                           </TableCell>
                         );
                       })
