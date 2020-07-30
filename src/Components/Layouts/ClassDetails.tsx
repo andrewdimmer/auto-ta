@@ -25,6 +25,7 @@ declare interface ClassDetailsProps {
   classId: string;
   setLoadingMessage: (message: string) => void;
   setNotification: (notification: NotificationMessage) => void;
+  loadedFromURL?: boolean;
   classes: any;
 }
 
@@ -43,6 +44,7 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
   classId,
   setLoadingMessage,
   setNotification,
+  loadedFromURL = false,
   classes,
 }) => {
   const [userClass, setUserClass] = React.useState<UserClass>({
@@ -97,14 +99,16 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
     >
       <AppBar position="sticky">
         <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={handleClose}
-            aria-label="close"
-          >
-            <CloseIcon />
-          </IconButton>
+          {!loadedFromURL && (
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleClose}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+          )}
           <Typography variant="h6" className={classes.title}>
             {userClass?.className} - Auto TA
           </Typography>

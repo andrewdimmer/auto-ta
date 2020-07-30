@@ -20,13 +20,11 @@ import {
   joinNewClass,
 } from "../../Scripts/firebaseClassesDatabaseCalls";
 import ClassListItem from "../Content/ClassListItem";
+import ClassDetails from "../Layouts/ClassDetails";
 
 const ClassesPage: React.FunctionComponent<PageProps> = ({
   setLoadingMessage,
   setNotification,
-  setPageKey,
-  handleLoadUserData,
-  setUserMode,
   userMode,
   currentUserProfile,
   classes,
@@ -297,6 +295,23 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ClassDetails
+        open={window.location.href.includes("?classId=")}
+        setOpen={(open) => {
+          /* Note: If opened as a pop-out, the user should be locked to that page. */
+        }}
+        userMode={userMode}
+        userId={currentUserProfile ? currentUserProfile.userId : "void"}
+        classId={window.location.href.substring(
+          window.location.href.indexOf("?classId=") + "?classId=".length,
+          window.location.href.length
+        )}
+        setLoadingMessage={setLoadingMessage}
+        setNotification={setNotification}
+        loadedFromURL={true}
+        classes={classes}
+      />
     </Fragment>
   );
 };

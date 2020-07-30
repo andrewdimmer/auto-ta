@@ -1,5 +1,5 @@
-import { Fab } from "@material-ui/core";
-import PictureInPictureIcon from "@material-ui/icons/PictureInPicture";
+import { IconButton } from "@material-ui/core";
+import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import React, { Fragment } from "react";
 
 declare interface ClassPopupButtonProps {
@@ -34,14 +34,12 @@ const ClassPopupButton: React.FunctionComponent<ClassPopupButtonProps> = ({
           left: 0,
         }}
       />
-      <Fab
-        color="primary"
-        size="small"
+      <IconButton
         onClick={() => {
           window.open(
-            window.location.href,
+            window.location.href + "?classId=" + classId,
             "_blank",
-            `width=300,height=300,left=${
+            `width=300,height=300` /*,left=${
               screenWidth.current?.clientWidth
                 ? screenWidth.current.clientWidth - 300 > 0
                   ? screenWidth.current.clientWidth - 300
@@ -53,12 +51,12 @@ const ClassPopupButton: React.FunctionComponent<ClassPopupButtonProps> = ({
                   ? screenHeight.current.clientHeight - 300
                   : 0
                 : 0
-            }`
+            }` */
           );
         }}
       >
-        <PictureInPictureIcon />
-      </Fab>
+        <OpenInNewIcon />
+      </IconButton>
     </Fragment>
   );
 };
