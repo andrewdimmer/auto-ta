@@ -2,6 +2,7 @@ import {
   AppBar,
   Container,
   Dialog,
+  Grid,
   IconButton,
   Paper,
   Slide,
@@ -13,7 +14,6 @@ import {
   TableRow,
   Toolbar,
   Typography,
-  Grid,
 } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import CloseIcon from "@material-ui/icons/Close";

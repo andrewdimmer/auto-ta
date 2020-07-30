@@ -80,7 +80,14 @@ const LoginPage: React.FunctionComponent<PageProps> = ({
   return (
     <Fragment>
       <Container className={classes.pageTitle}>
-        <Typography variant="h3">Join or Login</Typography>
+        <Typography variant="h3">
+          Join or Login{" "}
+          {userMode
+            ? userMode === "teacher"
+              ? "as a Teacher"
+              : "as a Student"
+            : ""}
+        </Typography>
       </Container>
       {!userMode ? (
         <Fragment>
@@ -110,14 +117,33 @@ const LoginPage: React.FunctionComponent<PageProps> = ({
           </Button>
         </Fragment>
       ) : (
-        <LoginUi
-          allowEmailAuth={true}
-          allowPhoneAuth={false}
-          allowAnonymousAuth={false}
-          newUserCallback={newUserCallback}
-          existingUserCallback={existingUserCallback}
-          classes={classes}
-        />
+        <Fragment>
+          <LoginUi
+            allowEmailAuth={true}
+            allowPhoneAuth={false}
+            allowAnonymousAuth={false}
+            newUserCallback={newUserCallback}
+            existingUserCallback={existingUserCallback}
+            classes={classes}
+          />
+          <Container className={classes.pageTitle}>
+            <Button
+              color={currentUser ? "inherit" : "primary"}
+              variant="outlined"
+              size="medium"
+              className={classes.marginedTopBottom}
+              onClick={() => {
+                userMode === "teacher"
+                  ? setUserMode("student")
+                  : setUserMode("teacher");
+              }}
+            >
+              <Typography variant="h6">
+                {userMode === "teacher" ? "I'm a Student" : "I'm a Teacher"}
+              </Typography>
+            </Button>
+          </Container>
+        </Fragment>
       )}
     </Fragment>
   );

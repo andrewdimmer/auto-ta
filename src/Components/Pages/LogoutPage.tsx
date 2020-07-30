@@ -7,10 +7,12 @@ const LogoutPage: React.FunctionComponent<PageProps> = ({
   setNotification,
   setPageKey,
   handleLoadUserData,
+  setUserMode,
   classes,
 }) => {
   const handleLogout = () => {
     firebaseApp.auth().signOut();
+    setUserMode("");
     setNotification({
       type: "success",
       message: "Successfully Signed Out",
