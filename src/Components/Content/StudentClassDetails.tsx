@@ -1,11 +1,10 @@
-import { Button, Container, Typography, TextField } from "@material-ui/core";
+import { Button, Container, TextField, Typography } from "@material-ui/core";
 import React, { Fragment } from "react";
-import { raiseHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 import {
-  closeFirebaseQuestionListener,
-  createFirebaseQuestionListener,
-} from "../../Scripts/firebaseCurrentQuestionsSync";
-import { answerQuestion } from "../../Scripts/firebaseQuestionsDatabaseCalls";
+  answerQuestion,
+  userHasAnsweredQuestion,
+} from "../../Scripts/firebaseQuestionsDatabaseCalls";
+import { raiseHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 
 declare interface StudentClassDetailsProps {
   userId: string;
@@ -29,28 +28,13 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
   };
 
   if (userClass.currentQuestion) {
-    createFirebaseQuestionListener(
+    userHasAnsweredQuestion(
+      userId,
       userClass.classId,
-      userClass.currentQuestion,
-      (answers) => {
-        console.log("userId: " + userId);
-        for (const answerUserId in answers) {
-          console.log("answerUserId:" + answerUserId);
-          if (
-            answerUserId.indexOf(userId) === 0 &&
-            userId.indexOf(answerUserId) === 0
-          ) {
-            setUnanswered(false);
-            console.log("Answered");
-            return;
-          }
-        }
-        console.log("Unanswered");
-        setUnanswered(true);
-      }
-    );
-  } else {
-    closeFirebaseQuestionListener();
+      userClass.currentQuestion
+    ).then((result) => {
+      setUnanswered(!result);
+    });
   }
 
   return (
@@ -68,7 +52,9 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
                   userClass.classId,
                   userClass.currentQuestion,
                   "Yes"
-                );
+                ).then(() => {
+                  setUnanswered(false);
+                });
               }}
               className={classes.marginedTopBottom}
             >
@@ -84,7 +70,9 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
                   userClass.classId,
                   userClass.currentQuestion,
                   "No"
-                );
+                ).then(() => {
+                  setUnanswered(false);
+                });
               }}
               className={classes.marginedTopBottom}
             >
@@ -100,7 +88,9 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
                   userClass.classId,
                   userClass.currentQuestion,
                   "Maybe"
-                );
+                ).then(() => {
+                  setUnanswered(false);
+                });
               }}
               className={classes.marginedTopBottom}
             >
@@ -126,8 +116,10 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
                   userClass.classId,
                   userClass.currentQuestion,
                   shortAnswer
-                );
-                setShortAnswer("");
+                ).then(() => {
+                  setUnanswered(false);
+                  setShortAnswer("");
+                });
               }}
               className={classes.marginedTopBottom}
             >
