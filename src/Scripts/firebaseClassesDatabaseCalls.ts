@@ -49,30 +49,30 @@ export const createNewClass = (
 };
 
 export const joinNewClass = (userId: string, userClasses: string[]) => {
-  return firestoreUsersRef
-    .doc(userId)
-    .update({ attending: userClasses })
-    .then(() => {
-      return firestoreClassesRef
-        .doc(userClasses[userClasses.length - 1])
-        .collection("currentQuestionAnswers")
-        .doc(userId)
-        .set({ userId, questionId: "", answer: "" })
-        .then(() => {
-          return firestoreClassesRef
-            .doc(userClasses[userClasses.length - 1])
-            .get()
-            .then((classDoc) => {
-              const data = classDoc.data();
-              if (data) {
-                return data as UserClass;
-              }
-              console.log("No data returned for that class");
-              return null;
-            })
-            .catch(logErrReturn(null));
-        })
-        .catch(logErrReturn(null));
+  return firestoreClassesRef
+    .doc(userClasses[userClasses.length - 1])
+    .get()
+    .then((classDoc) => {
+      const classData = classDoc.data();
+      if (classData) {
+        return firestoreUsersRef
+          .doc(userId)
+          .update({ attending: userClasses })
+          .then(() => {
+            return firestoreClassesRef
+              .doc(userClasses[userClasses.length - 1])
+              .collection("currentQuestionAnswers")
+              .doc(userId)
+              .set({ userId, questionId: "", answer: "" })
+              .then(() => {
+                return classData as UserClass;
+              })
+              .catch(logErrReturn(null));
+          })
+          .catch(logErrReturn(null));
+      }
+      console.log("No data returned for that class");
+      return null;
     })
     .catch(logErrReturn(null));
 };

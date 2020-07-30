@@ -60,34 +60,46 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
   };
 
   const createClass = () => {
-    setLoadingMessage("Creating New Class...");
-    if (currentUserProfile) {
-      const classId = nanoid();
-      currentUserProfile.teaching.push(classId);
-      const newClassObject: UserClass = {
-        classId,
-        className: newClassName,
-        handRaised: false,
-        currentQuestion: "",
-        currentQuestionType: "",
-      };
-      createNewClass(
-        currentUserProfile.userId,
-        currentUserProfile.teaching,
-        newClassObject
-      )
-        .then((status) => {
-          if (status) {
-            const newUserClasses = userClasses.concat([newClassObject]);
-            setUserClasses(newUserClasses);
-            setLoadingMessage("");
-            setNotification({
-              type: "success",
-              message: "New Class Created Successfully.",
-              open: true,
-            });
-            closeAndCancel();
-          } else {
+    if (newClassName) {
+      setLoadingMessage("Creating New Class...");
+      if (currentUserProfile) {
+        const classId = nanoid();
+        currentUserProfile.teaching.push(classId);
+        const newClassObject: UserClass = {
+          classId,
+          className: newClassName,
+          handRaised: false,
+          currentQuestion: "",
+          currentQuestionType: "",
+        };
+        createNewClass(
+          currentUserProfile.userId,
+          currentUserProfile.teaching,
+          newClassObject
+        )
+          .then((status) => {
+            if (status) {
+              const newUserClasses = userClasses.concat([newClassObject]);
+              setUserClasses(newUserClasses);
+              setLoadingMessage("");
+              setNotification({
+                type: "success",
+                message: "New Class Created Successfully.",
+                open: true,
+              });
+              closeAndCancel();
+            } else {
+              setLoadingMessage("");
+              setNotification({
+                type: "error",
+                message: "Unable to create class. Please try again later.",
+                open: true,
+              });
+              closeAndCancel();
+            }
+          })
+          .catch((err) => {
+            console.log(err);
             setLoadingMessage("");
             setNotification({
               type: "error",
@@ -95,74 +107,89 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
               open: true,
             });
             closeAndCancel();
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoadingMessage("");
-          setNotification({
-            type: "error",
-            message: "Unable to create class. Please try again later.",
-            open: true,
           });
-          closeAndCancel();
+      } else {
+        setLoadingMessage("");
+        setNotification({
+          type: "error",
+          message:
+            "Unable to create class. Try logging off and logging on again.",
+          open: true,
         });
+        closeAndCancel();
+      }
     } else {
-      setLoadingMessage("");
       setNotification({
-        type: "error",
-        message:
-          "Unable to create class. Try logging off and logging on again.",
+        type: "warning",
+        message: "Please enter a class name.",
         open: true,
       });
-      closeAndCancel();
     }
   };
 
   const joinClass = () => {
-    setLoadingMessage("Joining Class...");
-    if (currentUserProfile) {
-      currentUserProfile.attending.push(joinClassCode);
-      joinNewClass(currentUserProfile.userId, currentUserProfile.attending)
-        .then((joinedClass) => {
-          if (joinedClass) {
-            const newUserClasses = userClasses.concat([joinedClass]);
-            setUserClasses(newUserClasses);
-            setLoadingMessage("");
-            setNotification({
-              type: "success",
-              message: "New Class Joined Successfully.",
-              open: true,
+    if (joinClassCode) {
+      if (currentUserProfile) {
+        if (!currentUserProfile.attending.includes(joinClassCode)) {
+          setLoadingMessage("Joining Class...");
+          currentUserProfile.attending.push(joinClassCode);
+          joinNewClass(currentUserProfile.userId, currentUserProfile.attending)
+            .then((joinedClass) => {
+              if (joinedClass) {
+                const newUserClasses = userClasses.concat([joinedClass]);
+                setUserClasses(newUserClasses);
+                setLoadingMessage("");
+                setNotification({
+                  type: "success",
+                  message: "New Class Joined Successfully.",
+                  open: true,
+                });
+                closeAndCancel();
+              } else {
+                setLoadingMessage("");
+                setNotification({
+                  type: "error",
+                  message:
+                    "Unable to join class. Please double check you have the right class code and try again later.",
+                  open: true,
+                });
+                closeAndCancel();
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              setLoadingMessage("");
+              setNotification({
+                type: "error",
+                message:
+                  "Unable to join class. Please double check you have the right class code and try again later.",
+                open: true,
+              });
+              closeAndCancel();
             });
-            closeAndCancel();
-          } else {
-            setLoadingMessage("");
-            setNotification({
-              type: "error",
-              message: "Unable to join class. Please try again later.",
-              open: true,
-            });
-            closeAndCancel();
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoadingMessage("");
+        } else {
           setNotification({
-            type: "error",
-            message: "Unable to join class. Please try again later.",
+            type: "warning",
+            message: "You've already joined this class!",
             open: true,
           });
           closeAndCancel();
+        }
+      } else {
+        setNotification({
+          type: "error",
+          message:
+            "Unable to join class. Try logging off and logging on again.",
+          open: true,
         });
+        closeAndCancel();
+      }
     } else {
-      setLoadingMessage("");
       setNotification({
-        type: "error",
-        message: "Unable to join class. Try logging off and logging on again.",
+        type: "warning",
+        message: "Please enter a class code.",
         open: true,
       });
-      closeAndCancel();
     }
   };
 
