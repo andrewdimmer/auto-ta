@@ -130,3 +130,20 @@ export const getCurrentQuestionAnswers = (
     })
     .catch(logErrReturn({}));
 };
+
+export const userHasAnsweredQuestion = (
+  userId: string,
+  classId: string,
+  questionId: string
+) => {
+  return firestoreClassesRef
+    .doc(classId)
+    .collection("currentQuestionAnswers")
+    .doc(userId)
+    .get()
+    .then((doc) => {
+      const data = doc.data();
+      return data ? data.questionId === questionId : false;
+    })
+    .catch(logErrReturn(false));
+};
