@@ -6,7 +6,7 @@ let firestoreListener: (() => void) | null;
 export const createFirebaseQuestionListener = (
   classId: string,
   questionId: string,
-  callback: (answers: { [key: string]: string }) => any
+  callback: (answers: { [key: string]: string }, totalStudent: number) => any
 ) => {
   closeFirebaseQuestionListener();
   firestoreListener = firestoreClassesRef
@@ -15,7 +15,7 @@ export const createFirebaseQuestionListener = (
     .onSnapshot(
       (snapshot) => {
         const results = processCurrentAnswersHelper(snapshot, questionId);
-        callback(results);
+        callback(results, snapshot.docs.length);
       },
       (err) => {
         console.log(err);

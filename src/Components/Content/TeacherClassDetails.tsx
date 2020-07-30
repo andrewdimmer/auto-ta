@@ -1,4 +1,12 @@
-import { Button, Container, TextField, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  LinearProgress,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import React, { Fragment } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import {
@@ -6,6 +14,7 @@ import {
   createFirebaseQuestionListener,
 } from "../../Scripts/firebaseCurrentQuestionsSync";
 import {
+  closeAndCompleteQuestion,
   closeQuestion,
   createNewQuestion,
   markQuestionComplete,
@@ -27,9 +36,15 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
   setNotification,
   classes,
 }) => {
-  const [yesCount, setYesCount] = React.useState<number>(0);
-  const [noCount, setNoCount] = React.useState<number>(0);
-  const [maybeCount, setMaybeCount] = React.useState<number>(0);
+  const [pollCount, setPollCount] = React.useState<{
+    yes: number;
+    maybe: number;
+    no: number;
+  }>({ yes: 0, maybe: 0, no: 0 });
+  const [answerCount, setAnswerCount] = React.useState<{
+    answers: number;
+    users: number;
+  }>({ answers: 0, users: 0 });
 
   const [shortAnswer, setShortAnswer] = React.useState<string>("");
 
@@ -41,28 +56,63 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
     setShortAnswer(event.target.value);
   };
 
-  if (userClass.currentQuestion && userClass.currentQuestionType === "poll") {
+  const handleCloseQuestion = () => {
+    if (userClass.currentQuestionType === "poll") {
+      closeAndCompleteQuestion(
+        userClass.classId,
+        userClass.currentQuestion
+      ).then(resetCountAndCloseListener);
+    } else {
+      closeQuestion(userClass.classId).then(resetCountAndCloseListener);
+    }
+  };
+
+  const resetCountAndCloseListener = () => {
+    closeFirebaseQuestionListener();
+    setPollCount({ yes: 0, no: 0, maybe: 0 });
+    setAnswerCount({
+      answers: 0,
+      users: answerCount.users,
+    });
+  };
+
+  if (userClass.currentQuestion) {
     createFirebaseQuestionListener(
       userClass.classId,
       userClass.currentQuestion,
-      (answers) => {
-        let yesCountTemp = 0;
-        let noCountTemp = 0;
-        let maybeCountTemp = 0;
+      (answers, totalNumberOfStudents) => {
+        let yes = 0;
+        let maybe = 0;
+        let no = 0;
+        let answerCountTemp = 0;
         for (const user in answers) {
-          if (answers[user].indexOf("Yes") === 0) {
-            yesCountTemp++;
-          }
-          if (answers[user].indexOf("No") === 0) {
-            noCountTemp++;
-          }
-          if (answers[user].indexOf("Maybe") === 0) {
-            maybeCountTemp++;
+          answerCountTemp++;
+          if (answers[user] === "Yes") {
+            yes++;
+          } else if (answers[user] === "Maybe") {
+            maybe++;
+          } else if (answers[user] === "No") {
+            no++;
           }
         }
-        setYesCount(yesCountTemp);
-        setNoCount(noCountTemp);
-        setMaybeCount(maybeCountTemp);
+        setPollCount({ yes, maybe, no });
+        setAnswerCount({
+          answers: answerCountTemp,
+          users: totalNumberOfStudents,
+        });
+        // Close short answers once all answers are in
+        if (
+          userClass.currentQuestionType === "shortAnswer" &&
+          totalNumberOfStudents > 0 &&
+          totalNumberOfStudents === answerCountTemp
+        ) {
+          handleCloseQuestion();
+          setNotification({
+            type: "info",
+            message: "All students have answered!",
+            open: true,
+          });
+        }
       }
     );
   } else {
@@ -120,35 +170,84 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
           ) : (
             <Fragment>
               <Typography variant="h5">Awaiting Results...</Typography>
+              <strong>{answerCount.answers}</strong> out of{" "}
+              <strong>{answerCount.users}</strong> students have answered.
+              <br />
+              <br />
               {userClass.currentQuestionType === "poll" && (
                 <Fragment>
-                  <strong>Yes: </strong>
-                  {yesCount}
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Box style={{ width: 85, textAlign: "left" }}>
+                        <strong>Yes: </strong>
+                        {pollCount.yes}
+                      </Box>
+                    </Grid>
+                    <Grid item xs>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          answerCount.users > 0
+                            ? (pollCount.yes * 100) / answerCount.users
+                            : 0
+                        }
+                      />
+                    </Grid>
+                  </Grid>
                   <br />
-                  <strong>No: </strong>
-                  {noCount}
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Box style={{ width: 85, textAlign: "left" }}>
+                        <strong>Maybe: </strong>
+                        {pollCount.maybe}
+                      </Box>
+                    </Grid>
+                    <Grid item xs>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          answerCount.users > 0
+                            ? (pollCount.maybe * 100) / answerCount.users
+                            : 0
+                        }
+                      />
+                    </Grid>
+                  </Grid>
                   <br />
-                  <strong>Maybe: </strong>
-                  {maybeCount}
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Box style={{ width: 85, textAlign: "left" }}>
+                        <strong>No: </strong>
+                        {pollCount.no}
+                      </Box>
+                    </Grid>
+                    <Grid item xs>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          answerCount.users > 0
+                            ? (pollCount.no * 100) / answerCount.users
+                            : 0
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                  <br />
                 </Fragment>
               )}
               <Button
                 color="primary"
                 variant="contained"
                 fullWidth
-                onClick={() => {
-                  closeQuestion(userClass.classId);
-                  if (userClass.currentQuestionType === "poll") {
-                    markQuestionComplete(
-                      userClass.classId,
-                      userClass.currentQuestion,
-                      ""
-                    );
-                  }
-                }}
+                onClick={handleCloseQuestion}
                 className={classes.marginedTopBottom}
               >
-                <Typography variant="h5">Close Question</Typography>
+                <Typography variant="h5">
+                  Close{" "}
+                  {userClass.currentQuestionType === "poll"
+                    ? "Poll"
+                    : "Question"}
+                </Typography>
               </Button>
             </Fragment>
           )
