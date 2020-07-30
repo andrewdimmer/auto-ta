@@ -61,6 +61,34 @@ export const markQuestionComplete = (
     .catch(logErrReturn(false));
 };
 
+export const closeAndCompleteQuestion = (
+  classId: string,
+  questionId: string,
+  correctAnswer: string = ""
+) => {
+  return firestoreClassesRef
+    .doc(classId)
+    .collection("currentQuestionAnswers")
+    .get()
+    .then((snapshot) => {
+      const answers = processCurrentAnswersHelper(snapshot, questionId);
+      return firestoreClassesRef
+        .doc(classId)
+        .collection("questions")
+        .doc(questionId)
+        .update({ correctAnswer, answers })
+        .then(() => {
+          return firestoreClassesRef
+            .doc(classId)
+            .update({ currentQuestionType: "", currentQuestion: "" })
+            .then(() => true)
+            .catch(logErrReturn(false));
+        })
+        .catch(logErrReturn(false));
+    })
+    .catch(logErrReturn(false));
+};
+
 export const answerQuestion = (
   userId: string,
   classId: string,

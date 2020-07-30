@@ -9,6 +9,7 @@ import {
   closeQuestion,
   createNewQuestion,
   markQuestionComplete,
+  closeAndCompleteQuestion,
 } from "../../Scripts/firebaseQuestionsDatabaseCalls";
 import { ackRaisedHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 import ReportView from "../Layouts/ReportView";
@@ -48,7 +49,18 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
   };
 
   const handleCloseQuestion = () => {
-    closeQuestion(userClass.classId);
+    if (userClass.currentQuestionType === "poll") {
+      closeAndCompleteQuestion(
+        userClass.classId,
+        userClass.currentQuestion
+      ).then(resetCountAndCloseListener);
+    } else {
+      closeQuestion(userClass.classId).then(resetCountAndCloseListener);
+    }
+  };
+
+  const resetCountAndCloseListener = () => {
+    closeFirebaseQuestionListener();
     setPollCount({ yes: 0, no: 0, maybe: 0 });
     setAnswerCount({
       answers: 0,
@@ -83,8 +95,8 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
         // Close short answers once all answers are in
         if (
           userClass.currentQuestionType === "shortAnswer" &&
-          answerCount.users > 0 &&
-          answerCount.users === answerCount.answers
+          totalNumberOfStudents > 0 &&
+          totalNumberOfStudents === answerCountTemp
         ) {
           handleCloseQuestion();
           setNotification({
@@ -170,16 +182,7 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
                 color="primary"
                 variant="contained"
                 fullWidth
-                onClick={() => {
-                  handleCloseQuestion();
-                  if (userClass.currentQuestionType === "poll") {
-                    markQuestionComplete(
-                      userClass.classId,
-                      userClass.currentQuestion,
-                      ""
-                    );
-                  }
-                }}
+                onClick={handleCloseQuestion}
                 className={classes.marginedTopBottom}
               >
                 <Typography variant="h5">
