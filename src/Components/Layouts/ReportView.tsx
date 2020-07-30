@@ -1,21 +1,31 @@
 import {
   AppBar,
+  Container,
   Dialog,
-  Grid,
   IconButton,
+  Paper,
   Slide,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Toolbar,
   Typography,
-  Container,
 } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import CloseIcon from "@material-ui/icons/Close";
-import React from "react";
+import React, { Fragment } from "react";
+import { getReportData } from "../../Scripts/firebaseReportGenerationCalls";
+import { NotificationMessage } from "../Misc/Notifications";
 
 declare interface ReportViewProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   userClass: UserClass;
+  setLoadingMessage: (message: string) => void;
+  setNotification: (notification: NotificationMessage) => void;
   classes: any;
 }
 
@@ -30,11 +40,51 @@ const ReportView: React.FunctionComponent<ReportViewProps> = ({
   open,
   setOpen,
   userClass,
+  setLoadingMessage,
+  setNotification,
   classes,
 }) => {
+  const [reportData, setReportData] = React.useState<{
+    students: UserPublicProfile[];
+    questions: Question[];
+  } | null>(null);
+  const [loaded, setLoaded] = React.useState<boolean>(false);
+
   const handleClose = () => {
     setOpen(false);
+    setLoaded(false);
   };
+
+  const initReportData = () => {
+    if (open && !loaded) {
+      setLoadingMessage("Generating Report...");
+      setLoaded(true);
+      getReportData(userClass.classId)
+        .then((data) => {
+          setReportData(data);
+          if (!data) {
+            setNotification({
+              type: "error",
+              message: "Unable to get report data. Please try again soon.",
+              open: true,
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setNotification({
+            type: "error",
+            message: "Unable to get report data. Please try again soon.",
+            open: true,
+          });
+        })
+        .finally(() => {
+          setLoadingMessage("");
+        });
+    }
+  };
+
+  initReportData();
 
   return (
     <Dialog
@@ -59,50 +109,57 @@ const ReportView: React.FunctionComponent<ReportViewProps> = ({
         </Toolbar>
       </AppBar>
       <Container className={classes.marginedTopBottom}>
-        <Grid container spacing={2}>
-          <Grid container spacing={2}>
-            <Grid item xs={2}>
-              <strong>Andrew Dimmer</strong>
-            </Grid>
-            <Grid item xs={1}>
-              Yes
-            </Grid>
-            <Grid item xs={1}>
-              No
-            </Grid>
-            <Grid item xs={1}>
-              0
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={2}>
-              <strong>B</strong>
-            </Grid>
-            <Grid item xs={1}>
-              Maybe
-            </Grid>
-            <Grid item xs={1}>
-              <strong>-- --</strong>
-            </Grid>
-            <Grid item xs={1}>
-              0
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={2}>
-              <strong>C</strong>
-            </Grid>
-            <Grid item xs={1}>
-              No
-            </Grid>
-            <Grid item xs={1}>
-              No
-            </Grid>
-            <Grid item xs={1}>
-              <strong>--1--</strong>
-            </Grid>
-          </Grid>
-        </Grid>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Correct Answer</TableCell>
+                {reportData ? (
+                  reportData.questions.map((questionData) => {
+                    return (
+                      <TableCell align="right" key={questionData.questionId}>
+                        {questionData.type === "poll"
+                          ? "Poll"
+                          : questionData.correctAnswer
+                          ? questionData.correctAnswer
+                          : "No Correct Answer"}
+                      </TableCell>
+                    );
+                  })
+                ) : (
+                  <Fragment />
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {reportData ? (
+                reportData.students.map((studentData) => (
+                  <TableRow key={studentData.userId}>
+                    <TableCell component="th" scope="row">
+                      {studentData.displayName}
+                    </TableCell>
+                    {reportData ? (
+                      reportData.questions.map((questionData) => {
+                        return (
+                          <TableCell
+                            align="right"
+                            key={questionData.questionId}
+                          >
+                            {questionData.answers[studentData.userId]}
+                          </TableCell>
+                        );
+                      })
+                    ) : (
+                      <Fragment />
+                    )}
+                  </TableRow>
+                ))
+              ) : (
+                <Fragment />
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Container>
     </Dialog>
   );

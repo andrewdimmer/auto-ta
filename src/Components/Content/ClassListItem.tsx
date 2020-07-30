@@ -1,21 +1,24 @@
 import {
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Paper,
-  ListItemAvatar,
   Avatar,
+  IconButton,
+  ListItem,
+  ListItemAvatar,
+  ListItemSecondaryAction,
+  ListItemText,
+  Paper,
 } from "@material-ui/core";
-import React, { Fragment } from "react";
-import OpenInBrowserIcon from "@material-ui/icons/OpenInBrowser";
 import ClassIcon from "@material-ui/icons/Class";
+import OpenInBrowserIcon from "@material-ui/icons/OpenInBrowser";
+import React, { Fragment } from "react";
 import ClassDetails from "../Layouts/ClassDetails";
+import { NotificationMessage } from "../Misc/Notifications";
 
 declare interface ClassListItemProps {
   userClass: UserClass;
   userMode: UserMode;
   userId: string;
+  setLoadingMessage: (message: string) => void;
+  setNotification: (notification: NotificationMessage) => void;
   classes: any;
 }
 
@@ -23,6 +26,8 @@ const ClassListItem: React.FunctionComponent<ClassListItemProps> = ({
   userClass,
   userMode,
   userId,
+  setLoadingMessage,
+  setNotification,
   classes,
 }) => {
   const [detailsOpen, setDetailsOpen] = React.useState<boolean>(false);
@@ -58,6 +63,8 @@ const ClassListItem: React.FunctionComponent<ClassListItemProps> = ({
         userMode={userMode}
         userId={userId}
         classId={userClass.classId}
+        setLoadingMessage={setLoadingMessage}
+        setNotification={setNotification}
         classes={classes}
       />
     </Fragment>

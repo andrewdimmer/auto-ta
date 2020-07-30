@@ -1,25 +1,30 @@
-import { Button, Container, Typography, TextField } from "@material-ui/core";
+import { Button, Container, TextField, Typography } from "@material-ui/core";
 import React, { Fragment } from "react";
 import AudioPlayer from "react-h5-audio-player";
+import {
+  closeFirebaseQuestionListener,
+  createFirebaseQuestionListener,
+} from "../../Scripts/firebaseCurrentQuestionsSync";
 import {
   closeQuestion,
   createNewQuestion,
   markQuestionComplete,
 } from "../../Scripts/firebaseQuestionsDatabaseCalls";
-import {
-  closeFirebaseQuestionListener,
-  createFirebaseQuestionListener,
-} from "../../Scripts/firebaseCurrentQuestionsSync";
 import { ackRaisedHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 import ReportView from "../Layouts/ReportView";
+import { NotificationMessage } from "../Misc/Notifications";
 
 declare interface TeacherClassDetailsProps {
   userClass: UserClass;
+  setLoadingMessage: (message: string) => void;
+  setNotification: (notification: NotificationMessage) => void;
   classes: any;
 }
 
 const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = ({
   userClass,
+  setLoadingMessage,
+  setNotification,
   classes,
 }) => {
   const [yesCount, setYesCount] = React.useState<number>(0);
@@ -186,6 +191,8 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
         open={reportOpen}
         setOpen={setReportOpen}
         userClass={userClass}
+        setLoadingMessage={setLoadingMessage}
+        setNotification={setNotification}
         classes={classes}
       />
     </Fragment>
