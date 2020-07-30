@@ -1,24 +1,24 @@
 import {
+  Button,
   Container,
-  Typography,
-  Fab,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
+  DialogTitle,
+  Fab,
   TextField,
-  DialogActions,
-  Button,
+  Typography,
 } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+import { nanoid } from "nanoid";
 import React, { Fragment } from "react";
 import { PageProps } from ".";
 import {
-  getUserClasses,
   createNewClass,
+  getUserClasses,
   joinNewClass,
 } from "../../Scripts/firebaseClassesDatabaseCalls";
-import AddIcon from "@material-ui/icons/Add";
-import { nanoid } from "nanoid";
 import ClassListItem from "../Content/ClassListItem";
 
 const ClassesPage: React.FunctionComponent<PageProps> = ({
@@ -178,11 +178,8 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
 
   const loadClasses = () => {
     if (currentUserProfile && !loaded) {
-      console.log("Loading Classes for user " + currentUserProfile.userId);
-      console.log(getClassIdsByMode());
       setLoaded(true);
       getUserClasses(getClassIdsByMode()).then((newUserClasses) => {
-        console.log(newUserClasses);
         setUserClasses(newUserClasses);
       });
     }
@@ -200,6 +197,8 @@ const ClassesPage: React.FunctionComponent<PageProps> = ({
             userMode={userMode}
             userId={currentUserProfile ? currentUserProfile.userId : "void"}
             classes={classes}
+            setLoadingMessage={setLoadingMessage}
+            setNotification={setNotification}
             key={userClass.classId}
           />
         );

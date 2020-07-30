@@ -1,4 +1,5 @@
 import { firestoreClassesRef } from "./firebaseConfig";
+import { processCurrentAnswersHelper } from "./firebaseQuestionsDatabaseCalls";
 
 let firestoreListener: (() => void) | null;
 
@@ -10,18 +11,10 @@ export const createFirebaseQuestionListener = (
   closeFirebaseQuestionListener();
   firestoreListener = firestoreClassesRef
     .doc(classId)
-    .collection("questions")
-    .doc(questionId)
-    .collection("answers")
+    .collection("currentQuestionAnswers")
     .onSnapshot(
       (snapshot) => {
-        const results: { [key: string]: string } = {};
-        for (const doc of snapshot.docs) {
-          const data = doc.data();
-          if (data) {
-            results[data.userId] = data.answer;
-          }
-        }
+        const results = processCurrentAnswersHelper(snapshot, questionId);
         callback(results);
       },
       (err) => {

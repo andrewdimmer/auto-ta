@@ -32,4 +32,12 @@ declare interface Question {
   questionId: string;
   type: QuestionType;
   correctAnswer: string;
+  intDateStamp: number;
+  answers: { [userId: string]: string };
+}
+
+declare interface CurrentQuestionAnswer {
+  userId: string;
+  questionId: string;
+  answer: string;
 }

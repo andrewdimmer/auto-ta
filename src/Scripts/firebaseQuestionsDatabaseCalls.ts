@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import { firestoreClassesRef } from "./firebaseConfig";
-import { logErrReturnFalse } from "./helpers";
+import { logErrReturn } from "./helpers";
 
 export const createNewQuestion = (classId: string, type: QuestionType) => {
   const questionId = nanoid();
@@ -8,15 +8,21 @@ export const createNewQuestion = (classId: string, type: QuestionType) => {
     .doc(classId)
     .collection("questions")
     .doc(questionId)
-    .set({ questionId, type, answers: {}, correctAnswer: "" })
+    .set({
+      questionId,
+      type,
+      answers: {},
+      correctAnswer: "",
+      intDateStamp: Date.now(),
+    })
     .then(() => {
       return firestoreClassesRef
         .doc(classId)
         .update({ currentQuestion: questionId, currentQuestionType: type })
         .then(() => true)
-        .catch(logErrReturnFalse);
+        .catch(logErrReturn(false));
     })
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const closeQuestion = (classId: string) => {
@@ -24,7 +30,7 @@ export const closeQuestion = (classId: string) => {
     .doc(classId)
     .update({ currentQuestionType: "" })
     .then(() => true)
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const markQuestionComplete = (
@@ -34,17 +40,25 @@ export const markQuestionComplete = (
 ) => {
   return firestoreClassesRef
     .doc(classId)
-    .collection("questions")
-    .doc(questionId)
-    .update({ correctAnswer })
-    .then(() => {
+    .collection("currentQuestionAnswers")
+    .get()
+    .then((snapshot) => {
+      const answers = processCurrentAnswersHelper(snapshot, questionId);
       return firestoreClassesRef
         .doc(classId)
-        .update({ currentQuestion: "" })
-        .then(() => true)
-        .catch(logErrReturnFalse);
+        .collection("questions")
+        .doc(questionId)
+        .update({ correctAnswer, answers })
+        .then(() => {
+          return firestoreClassesRef
+            .doc(classId)
+            .update({ currentQuestion: "" })
+            .then(() => true)
+            .catch(logErrReturn(false));
+        })
+        .catch(logErrReturn(false));
     })
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const answerQuestion = (
@@ -55,11 +69,36 @@ export const answerQuestion = (
 ) => {
   return firestoreClassesRef
     .doc(classId)
-    .collection("questions")
-    .doc(questionId)
-    .collection("answers")
+    .collection("currentQuestionAnswers")
     .doc(userId)
-    .set({ userId, answer })
+    .set({ userId, questionId, answer })
     .then(() => true)
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
+};
+
+export const processCurrentAnswersHelper = (
+  snapshot: firebase.firestore.QuerySnapshot,
+  currentQuestionId: string
+) => {
+  return snapshot.docs.reduce((results, doc) => {
+    const data = doc.data();
+    if (data && data["questionId"] === currentQuestionId) {
+      results[data.userId] = data.answer;
+    }
+    return results;
+  }, {} as { [userId: string]: string });
+};
+
+export const getCurrentQuestionAnswers = (
+  classId: string,
+  questionId: string
+): Promise<{ [userId: string]: string }> => {
+  return firestoreClassesRef
+    .doc(classId)
+    .collection("currentQuestionAnswers")
+    .get()
+    .then((snapshot) => {
+      return processCurrentAnswersHelper(snapshot, questionId);
+    })
+    .catch(logErrReturn({}));
 };

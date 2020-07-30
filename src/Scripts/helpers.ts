@@ -1,9 +1,6 @@
-export const logErrReturnFalse = (err: any): boolean => {
-  console.log(err);
-  return false;
-};
-
-export const logErrReturnNull = (err: any): null => {
-  console.log(err);
-  return null;
-};
+export function logErrReturn<T>(returnValue: T) {
+  return (err: any) => {
+    console.log(err);
+    return returnValue;
+  };
+}

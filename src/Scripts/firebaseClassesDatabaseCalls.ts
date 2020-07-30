@@ -1,5 +1,5 @@
 import { firestoreClassesRef, firestoreUsersRef } from "./firebaseConfig";
-import { logErrReturnFalse, logErrReturnNull } from "./helpers";
+import { logErrReturn } from "./helpers";
 
 export const getUserClasses = (userClasses: string[]) => {
   const userClassPromises = userClasses.map(getUserClass);
@@ -27,7 +27,7 @@ export const getUserClass = (classId: string) => {
         return null;
       }
     })
-    .catch(logErrReturnNull);
+    .catch(logErrReturn(null));
 };
 
 export const createNewClass = (
@@ -43,9 +43,9 @@ export const createNewClass = (
         .doc(classObject.classId)
         .set(classObject)
         .then(() => true)
-        .catch(logErrReturnFalse);
+        .catch(logErrReturn(false));
     })
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const joinNewClass = (userId: string, userClasses: string[]) => {
@@ -55,16 +55,24 @@ export const joinNewClass = (userId: string, userClasses: string[]) => {
     .then(() => {
       return firestoreClassesRef
         .doc(userClasses[userClasses.length - 1])
-        .get()
-        .then((classDoc) => {
-          const data = classDoc.data();
-          if (data) {
-            return data as UserClass;
-          }
-          console.log("No data returned for that class");
-          return null;
+        .collection("currentQuestionAnswers")
+        .doc(userId)
+        .set({ userId, questionId: "", answer: "" })
+        .then(() => {
+          return firestoreClassesRef
+            .doc(userClasses[userClasses.length - 1])
+            .get()
+            .then((classDoc) => {
+              const data = classDoc.data();
+              if (data) {
+                return data as UserClass;
+              }
+              console.log("No data returned for that class");
+              return null;
+            })
+            .catch(logErrReturn(null));
         })
-        .catch(logErrReturnNull);
+        .catch(logErrReturn(null));
     })
-    .catch(logErrReturnNull);
+    .catch(logErrReturn(null));
 };

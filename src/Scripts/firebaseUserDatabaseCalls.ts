@@ -1,5 +1,5 @@
 import { firestoreUsersRef } from "./firebaseConfig";
-import { logErrReturnFalse, logErrReturnNull } from "./helpers";
+import { logErrReturn } from "./helpers";
 
 /**
  * createNewUserDatabaseObjects
@@ -17,7 +17,7 @@ export const createNewUserDatabaseObjects = ({
     .doc(userId)
     .set({ userId, displayName, email, photoUrl, teaching: [], attending: [] })
     .then(() => true)
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const getUserProfileDatabase = (
@@ -28,10 +28,9 @@ export const getUserProfileDatabase = (
     .get()
     .then((profile) => {
       const data = profile.data();
-      console.log(data);
       return data ? (data as UserProfile) : null;
     })
-    .catch(logErrReturnNull);
+    .catch(logErrReturn(null));
 };
 
 export const updateUserProfileDatabase = (

@@ -15,6 +15,7 @@ import {
 } from "../../Scripts/firebaseUserClassSync";
 import StudentClassDetails from "../Content/StudentClassDetails";
 import TeacherClassDetails from "../Content/TeacherClassDetails";
+import { NotificationMessage } from "../Misc/Notifications";
 
 declare interface ClassDetailsProps {
   open: boolean;
@@ -22,6 +23,8 @@ declare interface ClassDetailsProps {
   userMode: UserMode;
   userId: string;
   classId: string;
+  setLoadingMessage: (message: string) => void;
+  setNotification: (notification: NotificationMessage) => void;
   classes: any;
 }
 
@@ -38,6 +41,8 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
   userMode,
   userId,
   classId,
+  setLoadingMessage,
+  setNotification,
   classes,
 }) => {
   const [userClass, setUserClass] = React.useState<UserClass>({
@@ -106,7 +111,12 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
         </Toolbar>
       </AppBar>
       {userMode === "teacher" && (
-        <TeacherClassDetails userClass={userClass} classes={classes} />
+        <TeacherClassDetails
+          userClass={userClass}
+          setLoadingMessage={setLoadingMessage}
+          setNotification={setNotification}
+          classes={classes}
+        />
       )}
       {userMode === "student" && (
         <StudentClassDetails
