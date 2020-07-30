@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import { firestoreClassesRef } from "./firebaseConfig";
-import { logErrReturnEmptyObject, logErrReturnFalse } from "./helpers";
+import { logErrReturn } from "./helpers";
 
 export const createNewQuestion = (classId: string, type: QuestionType) => {
   const questionId = nanoid();
@@ -20,9 +20,9 @@ export const createNewQuestion = (classId: string, type: QuestionType) => {
         .doc(classId)
         .update({ currentQuestion: questionId, currentQuestionType: type })
         .then(() => true)
-        .catch(logErrReturnFalse);
+        .catch(logErrReturn(false));
     })
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const closeQuestion = (classId: string) => {
@@ -30,7 +30,7 @@ export const closeQuestion = (classId: string) => {
     .doc(classId)
     .update({ currentQuestionType: "" })
     .then(() => true)
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const markQuestionComplete = (
@@ -54,11 +54,11 @@ export const markQuestionComplete = (
             .doc(classId)
             .update({ currentQuestion: "" })
             .then(() => true)
-            .catch(logErrReturnFalse);
+            .catch(logErrReturn(false));
         })
-        .catch(logErrReturnFalse);
+        .catch(logErrReturn(false));
     })
-    .catch(logErrReturnEmptyObject);
+    .catch(logErrReturn(false));
 };
 
 export const answerQuestion = (
@@ -73,7 +73,7 @@ export const answerQuestion = (
     .doc(userId)
     .set({ userId, questionId, answer })
     .then(() => true)
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const processCurrentAnswersHelper = (
@@ -92,7 +92,7 @@ export const processCurrentAnswersHelper = (
 export const getCurrentQuestionAnswers = (
   classId: string,
   questionId: string
-) => {
+): Promise<{ [userId: string]: string }> => {
   return firestoreClassesRef
     .doc(classId)
     .collection("currentQuestionAnswers")
@@ -100,5 +100,5 @@ export const getCurrentQuestionAnswers = (
     .then((snapshot) => {
       return processCurrentAnswersHelper(snapshot, questionId);
     })
-    .catch(logErrReturnEmptyObject);
+    .catch(logErrReturn({}));
 };

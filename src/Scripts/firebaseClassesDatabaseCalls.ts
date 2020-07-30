@@ -1,5 +1,5 @@
 import { firestoreClassesRef, firestoreUsersRef } from "./firebaseConfig";
-import { logErrReturnFalse, logErrReturnNull } from "./helpers";
+import { logErrReturn } from "./helpers";
 
 export const getUserClasses = (userClasses: string[]) => {
   const userClassPromises = userClasses.map(getUserClass);
@@ -27,7 +27,7 @@ export const getUserClass = (classId: string) => {
         return null;
       }
     })
-    .catch(logErrReturnNull);
+    .catch(logErrReturn(null));
 };
 
 export const createNewClass = (
@@ -43,9 +43,9 @@ export const createNewClass = (
         .doc(classObject.classId)
         .set(classObject)
         .then(() => true)
-        .catch(logErrReturnFalse);
+        .catch(logErrReturn(false));
     })
-    .catch(logErrReturnFalse);
+    .catch(logErrReturn(false));
 };
 
 export const joinNewClass = (userId: string, userClasses: string[]) => {
@@ -70,9 +70,9 @@ export const joinNewClass = (userId: string, userClasses: string[]) => {
               console.log("No data returned for that class");
               return null;
             })
-            .catch(logErrReturnNull);
+            .catch(logErrReturn(null));
         })
-        .catch(logErrReturnNull);
+        .catch(logErrReturn(null));
     })
-    .catch(logErrReturnNull);
+    .catch(logErrReturn(null));
 };
