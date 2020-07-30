@@ -1,4 +1,12 @@
-import { Button, Container, TextField, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  LinearProgress,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import React, { Fragment } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import {
@@ -6,10 +14,10 @@ import {
   createFirebaseQuestionListener,
 } from "../../Scripts/firebaseCurrentQuestionsSync";
 import {
+  closeAndCompleteQuestion,
   closeQuestion,
   createNewQuestion,
   markQuestionComplete,
-  closeAndCompleteQuestion,
 } from "../../Scripts/firebaseQuestionsDatabaseCalls";
 import { ackRaisedHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 import ReportView from "../Layouts/ReportView";
@@ -168,14 +176,60 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
               <br />
               {userClass.currentQuestionType === "poll" && (
                 <Fragment>
-                  <strong>Yes: </strong>
-                  {pollCount.yes}
-                  <br />
-                  <strong>No: </strong>
-                  {pollCount.no}
-                  <br />
-                  <strong>Maybe: </strong>
-                  {pollCount.maybe}
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Box style={{ width: 85, textAlign: "left" }}>
+                        <strong>Yes: </strong>
+                        {pollCount.yes}
+                      </Box>
+                    </Grid>
+                    <Grid item xs>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          answerCount.users > 0
+                            ? (pollCount.yes * 100) / answerCount.users
+                            : 0
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Box style={{ width: 85, textAlign: "left" }}>
+                        <strong>No: </strong>
+                        {pollCount.no}
+                      </Box>
+                    </Grid>
+                    <Grid item xs>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          answerCount.users > 0
+                            ? (pollCount.no * 100) / answerCount.users
+                            : 0
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Box style={{ width: 85, textAlign: "left" }}>
+                        <strong>Maybe: </strong>
+                        {pollCount.maybe}
+                      </Box>
+                    </Grid>
+                    <Grid item xs>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          answerCount.users > 0
+                            ? (pollCount.maybe * 100) / answerCount.users
+                            : 0
+                        }
+                      />
+                    </Grid>
+                  </Grid>
                 </Fragment>
               )}
               <Button
