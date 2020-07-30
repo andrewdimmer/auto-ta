@@ -1,9 +1,10 @@
 import { Button, Container, TextField, Typography } from "@material-ui/core";
 import React, { Fragment } from "react";
 import {
-  answerQuestion,
-  userHasAnsweredQuestion,
-} from "../../Scripts/firebaseQuestionsDatabaseCalls";
+  closeFirebaseHasAnsweredQuestionListener,
+  createFirebaseHasAnsweredQuestionListener,
+} from "../../Scripts/firebaseCurrentQuestionsSync";
+import { answerQuestion } from "../../Scripts/firebaseQuestionsDatabaseCalls";
 import { raiseHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 
 declare interface StudentClassDetailsProps {
@@ -28,13 +29,16 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
   };
 
   if (userClass.currentQuestion) {
-    userHasAnsweredQuestion(
+    createFirebaseHasAnsweredQuestionListener(
       userId,
       userClass.classId,
-      userClass.currentQuestion
-    ).then((result) => {
-      setUnanswered(!result);
-    });
+      userClass.currentQuestion,
+      (result) => {
+        setUnanswered(!result);
+      }
+    );
+  } else {
+    closeFirebaseHasAnsweredQuestionListener();
   }
 
   return (
@@ -52,9 +56,7 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
                   userClass.classId,
                   userClass.currentQuestion,
                   "Yes"
-                ).then(() => {
-                  setUnanswered(false);
-                });
+                );
               }}
               className={classes.marginedTopBottom}
             >
@@ -70,9 +72,7 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
                   userClass.classId,
                   userClass.currentQuestion,
                   "No"
-                ).then(() => {
-                  setUnanswered(false);
-                });
+                );
               }}
               className={classes.marginedTopBottom}
             >
@@ -88,9 +88,7 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
                   userClass.classId,
                   userClass.currentQuestion,
                   "Maybe"
-                ).then(() => {
-                  setUnanswered(false);
-                });
+                );
               }}
               className={classes.marginedTopBottom}
             >
@@ -117,7 +115,6 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
                   userClass.currentQuestion,
                   shortAnswer
                 ).then(() => {
-                  setUnanswered(false);
                   setShortAnswer("");
                 });
               }}

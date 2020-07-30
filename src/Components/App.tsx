@@ -1,5 +1,6 @@
 import { Container } from "@material-ui/core";
 import React, { Fragment } from "react";
+import { createFirebaseAuthListener } from "../Scripts/firebaseAuthSync";
 import { firebaseApp } from "../Scripts/firebaseConfig";
 import { getUserProfileDatabase } from "../Scripts/firebaseUserDatabaseCalls";
 import { styles } from "../Styles";
@@ -32,6 +33,7 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
   const PageContent = getPageComponent(pageKey);
   const classes = styles();
   const [userMode, setUserMode] = React.useState<UserMode | "">("");
+  const [loaded, setLoaded] = React.useState<boolean>(false);
 
   const handleLoadUserData = (userId: string) => {
     if (userId) {
@@ -58,6 +60,35 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
     }
   };
 
+  const handleChangeUserMode = (newUserMode: UserMode) => {
+    setUserMode(newUserMode);
+    window.localStorage.setItem("userMode", newUserMode);
+  };
+
+  const initAutoTA = () => {
+    if (!loaded) {
+      setLoaded(true);
+      createFirebaseAuthListener((user) => {
+        handleLoadUserData(user ? user.uid : "");
+        if (user) {
+          setPageKey("classes");
+          const localStorageUserMode = window.localStorage.getItem(
+            "userMode"
+          ) as UserMode | null;
+          setUserMode(
+            localStorageUserMode !== null ? localStorageUserMode : ""
+          );
+        } else {
+          setPageKey("login");
+        }
+      });
+    }
+  };
+
+  setTimeout(() => {
+    initAutoTA();
+  }, 1);
+
   return (
     <Fragment>
       <NavBar
@@ -73,7 +104,7 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
           setLoadingMessage={setLoadingMessage}
           setNotification={setNotification}
           handleLoadUserData={handleLoadUserData}
-          setUserMode={setUserMode}
+          setUserMode={handleChangeUserMode}
           userMode={userMode}
           currentUser={currentUser}
           currentUserProfile={currentUserProfile}

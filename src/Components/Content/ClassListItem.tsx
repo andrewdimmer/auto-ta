@@ -12,6 +12,7 @@ import OpenInBrowserIcon from "@material-ui/icons/OpenInBrowser";
 import React, { Fragment } from "react";
 import ClassDetails from "../Layouts/ClassDetails";
 import { NotificationMessage } from "../Misc/Notifications";
+import ClassPopupButton from "../Layouts/ClassPopupButton";
 
 declare interface ClassListItemProps {
   userClass: UserClass;
@@ -53,6 +54,7 @@ const ClassListItem: React.FunctionComponent<ClassListItemProps> = ({
             >
               <OpenInBrowserIcon />
             </IconButton>
+            <ClassPopupButton classId={userClass.classId} />
           </ListItemSecondaryAction>
         </ListItem>
       </Paper>
