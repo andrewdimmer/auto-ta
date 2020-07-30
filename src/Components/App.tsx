@@ -1,9 +1,8 @@
-import { Button, Container, Typography } from "@material-ui/core";
+import { Container } from "@material-ui/core";
 import React, { Fragment } from "react";
 import { firebaseApp } from "../Scripts/firebaseConfig";
 import { getUserProfileDatabase } from "../Scripts/firebaseUserDatabaseCalls";
 import { styles } from "../Styles";
-import ClassPopupButton from "./Layouts/ClassPopupButton";
 import NavBar from "./Layouts/NavBar";
 import LoadingScreen from "./Misc/LoadingScreen";
 import NotificationBar, { NotificationMessage } from "./Misc/Notifications";
