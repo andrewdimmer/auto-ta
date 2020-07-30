@@ -27,9 +27,15 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
   setNotification,
   classes,
 }) => {
-  const [yesCount, setYesCount] = React.useState<number>(0);
-  const [noCount, setNoCount] = React.useState<number>(0);
-  const [maybeCount, setMaybeCount] = React.useState<number>(0);
+  const [pollCount, setPollCount] = React.useState<{
+    yes: number;
+    no: number;
+    maybe: number;
+  }>({ yes: 0, no: 0, maybe: 0 });
+  const [answerCount, setAnswerCount] = React.useState<{
+    answers: number;
+    users: number;
+  }>({ answers: 0, users: 0 });
 
   const [shortAnswer, setShortAnswer] = React.useState<string>("");
 
@@ -41,28 +47,52 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
     setShortAnswer(event.target.value);
   };
 
-  if (userClass.currentQuestion && userClass.currentQuestionType === "poll") {
+  const handleCloseQuestion = () => {
+    closeQuestion(userClass.classId);
+    setPollCount({ yes: 0, no: 0, maybe: 0 });
+    setAnswerCount({
+      answers: 0,
+      users: answerCount.users,
+    });
+  };
+
+  if (userClass.currentQuestion) {
     createFirebaseQuestionListener(
       userClass.classId,
       userClass.currentQuestion,
-      (answers) => {
-        let yesCountTemp = 0;
-        let noCountTemp = 0;
-        let maybeCountTemp = 0;
+      (answers, totalNumberOfStudents) => {
+        let yes = 0;
+        let no = 0;
+        let maybe = 0;
+        let answerCountTemp = 0;
         for (const user in answers) {
-          if (answers[user].indexOf("Yes") === 0) {
-            yesCountTemp++;
-          }
-          if (answers[user].indexOf("No") === 0) {
-            noCountTemp++;
-          }
-          if (answers[user].indexOf("Maybe") === 0) {
-            maybeCountTemp++;
+          answerCountTemp++;
+          if (answers[user] === "Yes") {
+            yes++;
+          } else if (answers[user] === "No") {
+            no++;
+          } else if (answers[user] === "Maybe") {
+            maybe++;
           }
         }
-        setYesCount(yesCountTemp);
-        setNoCount(noCountTemp);
-        setMaybeCount(maybeCountTemp);
+        setPollCount({ yes, no, maybe });
+        setAnswerCount({
+          answers: answerCountTemp,
+          users: totalNumberOfStudents,
+        });
+        // Close short answers once all answers are in
+        if (
+          userClass.currentQuestionType === "shortAnswer" &&
+          answerCount.users > 0 &&
+          answerCount.users === answerCount.answers
+        ) {
+          handleCloseQuestion();
+          setNotification({
+            type: "info",
+            message: "All students have answered!",
+            open: true,
+          });
+        }
       }
     );
   } else {
@@ -120,16 +150,20 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
           ) : (
             <Fragment>
               <Typography variant="h5">Awaiting Results...</Typography>
+              <strong>{answerCount.answers}</strong> out of{" "}
+              <strong>{answerCount.users}</strong> students have answered.
+              <br />
+              <br />
               {userClass.currentQuestionType === "poll" && (
                 <Fragment>
                   <strong>Yes: </strong>
-                  {yesCount}
+                  {pollCount.yes}
                   <br />
                   <strong>No: </strong>
-                  {noCount}
+                  {pollCount.no}
                   <br />
                   <strong>Maybe: </strong>
-                  {maybeCount}
+                  {pollCount.maybe}
                 </Fragment>
               )}
               <Button
@@ -137,7 +171,7 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
                 variant="contained"
                 fullWidth
                 onClick={() => {
-                  closeQuestion(userClass.classId);
+                  handleCloseQuestion();
                   if (userClass.currentQuestionType === "poll") {
                     markQuestionComplete(
                       userClass.classId,
@@ -148,7 +182,12 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
                 }}
                 className={classes.marginedTopBottom}
               >
-                <Typography variant="h5">Close Question</Typography>
+                <Typography variant="h5">
+                  Close{" "}
+                  {userClass.currentQuestionType === "poll"
+                    ? "Poll"
+                    : "Question"}
+                </Typography>
               </Button>
             </Fragment>
           )
