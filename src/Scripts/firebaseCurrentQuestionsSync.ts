@@ -1,7 +1,8 @@
 import { firestoreClassesRef } from "./firebaseConfig";
 import { processCurrentAnswersHelper } from "./firebaseQuestionsDatabaseCalls";
 
-let firestoreListener: (() => void) | null;
+let firestoreListenerAllAnswers: (() => void) | null;
+let firestoreListenerSingleUser: (() => void) | null;
 
 export const createFirebaseQuestionListener = (
   classId: string,
@@ -9,7 +10,7 @@ export const createFirebaseQuestionListener = (
   callback: (answers: { [key: string]: string }, totalStudent: number) => any
 ) => {
   closeFirebaseQuestionListener();
-  firestoreListener = firestoreClassesRef
+  firestoreListenerAllAnswers = firestoreClassesRef
     .doc(classId)
     .collection("currentQuestionAnswers")
     .onSnapshot(
@@ -24,8 +25,37 @@ export const createFirebaseQuestionListener = (
 };
 
 export const closeFirebaseQuestionListener = () => {
-  if (firestoreListener) {
-    firestoreListener();
+  if (firestoreListenerAllAnswers) {
+    firestoreListenerAllAnswers();
   }
-  firestoreListener = null;
+  firestoreListenerAllAnswers = null;
+};
+
+export const createFirebaseHasAnsweredQuestionListener = (
+  userId: string,
+  classId: string,
+  questionId: string,
+  callback: (answeredQuestion: boolean) => any
+) => {
+  closeFirebaseHasAnsweredQuestionListener();
+  firestoreListenerSingleUser = firestoreClassesRef
+    .doc(classId)
+    .collection("currentQuestionAnswers")
+    .doc(userId)
+    .onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        callback(data ? data.questionId === questionId : false);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+};
+
+export const closeFirebaseHasAnsweredQuestionListener = () => {
+  if (firestoreListenerSingleUser) {
+    firestoreListenerSingleUser();
+  }
+  firestoreListenerSingleUser = null;
 };
