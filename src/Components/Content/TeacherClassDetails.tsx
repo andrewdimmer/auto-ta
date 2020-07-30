@@ -9,7 +9,7 @@ import {
 import {
   closeFirebaseQuestionListener,
   createFirebaseQuestionListener,
-} from "../../Scripts/firebaseQuestionsSync";
+} from "../../Scripts/firebaseCurrentQuestionsSync";
 import { ackRaisedHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 import ReportView from "../Layouts/ReportView";
 

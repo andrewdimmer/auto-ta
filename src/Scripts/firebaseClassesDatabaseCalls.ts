@@ -55,14 +55,22 @@ export const joinNewClass = (userId: string, userClasses: string[]) => {
     .then(() => {
       return firestoreClassesRef
         .doc(userClasses[userClasses.length - 1])
-        .get()
-        .then((classDoc) => {
-          const data = classDoc.data();
-          if (data) {
-            return data as UserClass;
-          }
-          console.log("No data returned for that class");
-          return null;
+        .collection("currentQuestionAnswers")
+        .doc(userId)
+        .set({ userId, questionId: "", answer: "" })
+        .then(() => {
+          return firestoreClassesRef
+            .doc(userClasses[userClasses.length - 1])
+            .get()
+            .then((classDoc) => {
+              const data = classDoc.data();
+              if (data) {
+                return data as UserClass;
+              }
+              console.log("No data returned for that class");
+              return null;
+            })
+            .catch(logErrReturnNull);
         })
         .catch(logErrReturnNull);
     })

@@ -4,7 +4,7 @@ import { raiseHand } from "../../Scripts/firebaseRaiseHandDatabaseCalls";
 import {
   closeFirebaseQuestionListener,
   createFirebaseQuestionListener,
-} from "../../Scripts/firebaseQuestionsSync";
+} from "../../Scripts/firebaseCurrentQuestionsSync";
 import { answerQuestion } from "../../Scripts/firebaseQuestionsDatabaseCalls";
 
 declare interface StudentClassDetailsProps {
