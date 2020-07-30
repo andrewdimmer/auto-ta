@@ -80,7 +80,7 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
           currentUserProfile={currentUserProfile}
           classes={classes}
         />
-        <Button
+        {/* <Button
           color="primary"
           fullWidth
           variant="outlined"
@@ -97,7 +97,7 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
         >
           <Typography variant="h4">Return to Home</Typography>
         </Button>
-        <ClassPopupButton classId={"MTH 4553"} />
+        <ClassPopupButton classId={"MTH 4553"} /> */}
       </Container>
       <LoadingScreen loadingMessage={loadingMessage} />
       <NotificationBar
