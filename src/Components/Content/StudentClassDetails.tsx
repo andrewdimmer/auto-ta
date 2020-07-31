@@ -62,6 +62,7 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
             >
               <Typography variant="h5">Yes</Typography>
             </Button>
+            <p> </p>
             <Button
               color="primary"
               variant="contained"
@@ -78,6 +79,7 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
             >
               <Typography variant="h5">No</Typography>
             </Button>
+            <p> </p>
             <Button
               color="primary"
               variant="contained"
@@ -94,6 +96,7 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
             >
               <Typography variant="h5">Maybe</Typography>
             </Button>
+            <p> </p>
           </Fragment>
         ) : userClass.currentQuestionType === "shortAnswer" && unanswered ? (
           <Fragment>
@@ -104,6 +107,7 @@ const StudentClassDetails: React.FunctionComponent<StudentClassDetailsProps> = (
               value={shortAnswer}
               onChange={handleShortAnswerChange}
             />
+            <p> </p>
             <Button
               color="primary"
               variant="contained"

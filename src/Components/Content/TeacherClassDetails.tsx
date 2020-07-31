@@ -138,6 +138,7 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
             >
               <Typography variant="h5">Acknowledge Raised Hand</Typography>
             </Button>
+            <p> </p>
           </Fragment>
         )}
         {userClass.currentQuestion ? (
@@ -150,6 +151,7 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
                 value={shortAnswer}
                 onChange={handleShortAnswerChange}
               />
+              <p> </p>
               <Button
                 color="primary"
                 variant="contained"
@@ -262,6 +264,7 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
             >
               <Typography variant="h5">Start Yes/No/Maybe Poll</Typography>
             </Button>
+            <p> </p>
             <Button
               color="primary"
               variant="contained"
@@ -273,6 +276,7 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
             >
               <Typography variant="h5">Start Short Answer Question</Typography>
             </Button>
+            <p> </p>
             <Button
               color="primary"
               variant="contained"
@@ -282,6 +286,7 @@ const TeacherClassDetails: React.FunctionComponent<TeacherClassDetailsProps> = (
             >
               <Typography variant="h5">View Report</Typography>
             </Button>
+            <p> </p>
           </Fragment>
         )}
       </Container>
