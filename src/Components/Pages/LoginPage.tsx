@@ -103,6 +103,7 @@ const LoginPage: React.FunctionComponent<PageProps> = ({
           >
             <Typography variant="h4">I'm a Student</Typography>
           </Button>
+          <p> </p>
           <Button
             color={currentUser ? "inherit" : "primary"}
             fullWidth
