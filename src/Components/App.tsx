@@ -5,6 +5,7 @@ import { firebaseApp } from "../Scripts/firebaseConfig";
 import { getUserProfileDatabase } from "../Scripts/firebaseUserDatabaseCalls";
 import { styles } from "../Styles";
 import NavBar from "./Layouts/NavBar";
+import BugReportFab from "./Misc/BugReportFab";
 import LoadingScreen from "./Misc/LoadingScreen";
 import NotificationBar, { NotificationMessage } from "./Misc/Notifications";
 import { getPageComponent, getPageTitle } from "./Pages";
@@ -110,30 +111,13 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
           currentUserProfile={currentUserProfile}
           classes={classes}
         />
-        {/* <Button
-          color="primary"
-          fullWidth
-          variant="outlined"
-          size="large"
-          className={classes.marginedTopBottom}
-          onClick={() => {
-            window.open(
-              window.location.href,
-              "_blank",
-              "titlebar=no,toolbar=no,menubar=no,height=300,width=300,status=no,resize=no"
-            );
-            setPageKey("home");
-          }}
-        >
-          <Typography variant="h4">Return to Home</Typography>
-        </Button>
-        <ClassPopupButton classId={"MTH 4553"} /> */}
       </Container>
       <LoadingScreen loadingMessage={loadingMessage} />
       <NotificationBar
         notification={notification}
         setNotification={setNotification}
       />
+      <BugReportFab />
     </Fragment>
   );
 };

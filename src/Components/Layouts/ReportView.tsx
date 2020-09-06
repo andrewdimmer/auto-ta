@@ -19,6 +19,7 @@ import { TransitionProps } from "@material-ui/core/transitions/transition";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { Fragment } from "react";
 import { getReportData } from "../../Scripts/firebaseReportGenerationCalls";
+import BugReportFab from "../Misc/BugReportFab";
 import { NotificationMessage } from "../Misc/Notifications";
 import SquareAvatar from "../Misc/SquareAvatar";
 
@@ -206,6 +207,7 @@ const ReportView: React.FunctionComponent<ReportViewProps> = ({
           </Table>
         </TableContainer>
       </Container>
+      {!window.location.href.includes("?classId=") && <BugReportFab />}
     </Dialog>
   );
 };

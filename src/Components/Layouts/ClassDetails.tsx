@@ -15,6 +15,7 @@ import {
 } from "../../Scripts/firebaseUserClassSync";
 import StudentClassDetails from "../Content/StudentClassDetails";
 import TeacherClassDetails from "../Content/TeacherClassDetails";
+import BugReportFab from "../Misc/BugReportFab";
 import { NotificationMessage } from "../Misc/Notifications";
 
 declare interface ClassDetailsProps {
@@ -129,6 +130,7 @@ const ClassDetails: React.FunctionComponent<ClassDetailsProps> = ({
           classes={classes}
         />
       )}
+      {!window.location.href.includes("?classId=") && <BugReportFab />}
     </Dialog>
   );
 };
